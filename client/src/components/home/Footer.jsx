@@ -46,7 +46,7 @@ const Footer = () => {
                                 <path d="M8.56 2.75c4.37 6 6 9.42 8 17.72"></path>
                             </svg>
                         </a>
-                        <a href="https://www.linkedin.com/company/prebuiltui" target="_blank" rel="noreferrer">
+                        <a href="https://www.linkedin.com/in/vishesh-rao/" target="_blank" rel="noreferrer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-linkedin size-5 hover:text-green-500" aria-hidden="true">
                                 <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
                                 <rect width="4" height="12" x="2" y="9"></rect>
@@ -68,7 +68,7 @@ const Footer = () => {
                             </svg>
                         </a>
                     </div>
-                    <p className="mt-3 text-center">© 2025 <a href="https://prebuiltui.com">Rohan Singh</a></p>
+                    <p className="mt-3 text-center">© 2025 <a href="https://prebuiltui.com">Vishesh Rao</a></p>
                 </div>
             </footer>
         </>
