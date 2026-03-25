@@ -6,29 +6,29 @@ import Dashboard from './pages/Dashboard'
 import ResumeBuilder from './pages/ResumeBuilder'
 import Preview from './pages/Preview'
 import Login from './pages/Login'
-import { useDispatch } from 'react-redux'
+import useAuthStore from './stores/useAuthStore'
 import api from './configs/api'
-import { login, setLoading } from './app/features/authSlice'
 import { Toaster } from "react-hot-toast"
 
 const App = () => {
 
-  const dispatch = useDispatch()
+  const login = useAuthStore((s) => s.login)
+  const setLoading = useAuthStore((s) => s.setLoading)
+  const token = useAuthStore((s) => s.token)
 
   const getUserData = async () => {
-    const token = localStorage.getItem('token')
     try {
       if (token) {
         const { data } = await api.get('/api/users/data', { headers: { Authorization: token } })
         if (data.user) {
-          dispatch(login({ token, user: data.user }))
+          login({ token, user: data.user })
         }
-        dispatch(setLoading(false))
+        setLoading(false)
       } else {
-        dispatch(setLoading(false))
+        setLoading(false)
       }
     } catch (error) {
-      dispatch(setLoading(false))
+      setLoading(false)
       console.log(error)
     }
   }

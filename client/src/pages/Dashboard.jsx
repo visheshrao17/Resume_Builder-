@@ -1,79 +1,66 @@
 import { FilePenLineIcon, LoaderCircleIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloud, UploadCloudIcon, XIcon } from 'lucide-react'
-import dummyResumeData from '../assets/assets'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import api from '../configs/api'
+import useAuthStore from '../stores/useAuthStore'
+import useUIStore from '../stores/useUIStore'
+import { useResumes, useCreateResume, useDeleteResume, useUpdateResume, useUploadResume } from '../hooks/useResumes'
 import toast from 'react-hot-toast'
 import pdfToText from "react-pdftotext"
 
 const Dashboard = () => {
 
-  const { user, token } = useSelector(state => state.auth)
+  const { user, token } = useAuthStore()
 
   const colors = ['#9333ea', '#d97706', '#dc2626', '#0284c7', '#16a34a']
-  const [allResumes, setAllResumes] = useState([])
-  const [showCreateResume, setShowCreateResume] = useState(false)
-  const [showUploadResume, setShowUploadResume] = useState(false)
+
+  const { data: allResumes = [], isLoading: resumesLoading } = useResumes()
+  const createResumeMutation = useCreateResume()
+  const deleteResumeMutation = useDeleteResume()
+  const updateResumeMutation = useUpdateResume()
+  const uploadResumeMutation = useUploadResume()
+
+  const { showCreateResume, setShowCreateResume, showUploadResume, setShowUploadResume, editResumeId, setEditResumeId } = useUIStore()
+
   const [title, setTitle] = useState('')
   const [resume, setResume] = useState(null)
-  const [editResumeId, setEditResumeId] = useState('')
 
-  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
-
-  const loadAllResumes = async () => {
-    try {
-      const { data } = await api.get('/api/users/resumes', { headers: { Authorization: token } })
-      setAllResumes(data.resumes)
-    } catch (error) {
-      toast.error(error?.response?.data?.message || error.message)
-    }
-  }
-
-  useEffect(() => {
-    loadAllResumes()
-  }, [])
 
   const createResume = async (e) => {
     try {
       e.preventDefault()
-      const { data } = await api.post('/api/resumes/create', { title }, { headers: { Authorization: token } })
-      setAllResumes([...allResumes, data.resume])
+      const newResume = await createResumeMutation.mutateAsync(title)
       setTitle('')
       setShowCreateResume(false)
-      navigate(`/app/builder/${data.resume._id}`)
+      navigate(`/app/builder/${newResume._id}`)
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message)
+      // error handled in hook
     }
   }
 
   const uploadResume = async (e) => {
     e.preventDefault()
-    setIsLoading(true)
     try {
-      const resumeText = await pdfToText()
-      const { data } = await api.post('/api/ai/upload-resume', { title, resumeText }, { headers: { Authorization: token } })
+      const resumeText = await pdfToText(resume)
+      const data = await uploadResumeMutation.mutateAsync({ title, resumeText })
       setTitle('')
       setResume(null)
       setShowUploadResume(false)
-      navigate(`/app/builder/${data.resume._id}`)
+      navigate(`/app/builder/${data.resumeId}`)
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message)
+      // error handled in hook
     }
-    setIsLoading(false)
   }
 
   const editTitle = async (event) => {
     try {
       event.preventDefault()
-      const { data } = await api.put(`/api/resumes/update/`, { resumeId: editResumeId, resumeData: { title } }, { headers: { Authorization: token } })
-      setAllResumes(allResumes.map(resume => resume._id === editResumeId ? { ...resume, title } : resume))
+      await updateResumeMutation.mutateAsync({ resumeId: editResumeId, resumeData: { title } })
       setTitle('')
       setEditResumeId('')
-      toast.success(data.message)
+      toast.success('Title updated')
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message)
+      // error handled in hook
     }
   }
 
@@ -81,19 +68,18 @@ const Dashboard = () => {
     try {
       const confirm = window.confirm('Are you sure you want to delete this resume?')
       if (confirm) {
-        const { data } = await api.delete(`/api/resumes/delete/${resumeId}`, { headers: { Authorization: token } })
-        setAllResumes(allResumes.filter(resume => resume._id !== resumeId))
-        toast.success(data.message)
+        await deleteResumeMutation.mutateAsync(resumeId)
+        toast.success('Resume deleted')
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message)
+      // error handled in hook
     }
   }
 
   return (
     <div>
       <div className='max-w-7xl mx-auto px-4 py-8'>
-        <p className='text-2xl font-medium mb-6 bg-gradient-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent sm:hidden'>Welcome, John Doe</p>
+        <p className='text-2xl font-medium mb-6 bg-gradient-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent sm:hidden'>Welcome, {user?.name || 'User'}</p>
 
         <div className='flex gap-4'>
           <button onClick={() => setShowCreateResume(true)} className='w-full bg-white sm:max-w-36 h-48 flex flex-col items-center justify-center rounded-lg gap-2 text-slate-600 border border-dashed border-slate-300 group hover:border-indigo-500 hover:shadow-lg transition-all cursor-pointer duration-300 '>
@@ -111,7 +97,6 @@ const Dashboard = () => {
         <div className='grid grid-cols-2 sm:flex flex-wrap gap-4'>
           {allResumes.map((resume, index) => {
             const baseColor = colors[index % colors.length];
-            // { console.log(resume) }
             return (
               <button key={resume._id} onClick={() => navigate(`/app/builder/${resume._id}`)} className='relative w-full sm:max-w-36 h-48 flex flex-col items-center justify-center rounded-lg gap-2 border group hover:shadow-lg transition-all duration-300 cursor-pointer' style={{ background: `linear-gradient(135deg, ${baseColor}10, ${baseColor}40)`, borderColor: baseColor + "40" }}>
                 <FilePenLineIcon className='size-7 group-hover:scale-105 transition-all' style={{ color: baseColor }} />
@@ -157,9 +142,9 @@ const Dashboard = () => {
                 <input type='file' id='resume-input' accept='.pdf' hidden
                   onChange={(e) => setResume(e.target.files[0])} />
               </div>
-              <button disabled={isLoading} className='w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors'>
-                {isLoading && <LoaderCircleIcon className='animate-spin size-4 text-white' />}
-                {isLoading ? 'Uploading...' : "Upload Resume"}
+              <button disabled={uploadResumeMutation.isPending} className='w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors'>
+                {uploadResumeMutation.isPending && <LoaderCircleIcon className='animate-spin size-4 text-white' />}
+                {uploadResumeMutation.isPending ? 'Uploading...' : "Upload Resume"}
               </button>
               <XIcon className='absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors' onClick={() => { setShowUploadResume(false); setTitle('') }} />
             </div>

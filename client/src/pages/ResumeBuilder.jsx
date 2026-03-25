@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import dummyResumeData from '../assets/assets';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeftIcon, Briefcase, ChevronLeft, ChevronRight, DownloadIcon, EyeIcon, EyeOffIcon, FileText, FolderIcon, GraduationCap, Share2Icon, Sparkles, User } from 'lucide-react';
 import PersonalInfoForm from '../components/PersonalInfoForm';
@@ -11,14 +10,22 @@ import ExperienceForm from '../components/ExperienceForm';
 import EducationForm from '../components/EducationForm';
 import ProjectForm from '../components/ProjectForm';
 import SkillsForm from '../components/SkillsForm';
-import { useSelector } from 'react-redux';
-import api from '../configs/api';
+import useAuthStore from '../stores/useAuthStore';
+import useUIStore from '../stores/useUIStore';
+import { useResume, useUpdateResume } from '../hooks/useResumes';
+import useLocalDraft from '../hooks/useLocalDraft';
 import toast from 'react-hot-toast';
 
 const ResumeBuilder = () => {
 
   const { resumeId } = useParams();
-  const { token } = useSelector(state => state.auth)
+  const token = useAuthStore((s) => s.token);
+
+  const { activeSectionIndex, setActiveSectionIndex, removeBackground, setRemoveBackground } = useUIStore();
+
+  const { data: serverResume } = useResume(resumeId);
+  const updateResumeMutation = useUpdateResume();
+  const { draft, saveDraft, clearDraft } = useLocalDraft(resumeId);
 
   const [resumeData, setResumeData] = useState({
     _id: '',
@@ -34,8 +41,23 @@ const ResumeBuilder = () => {
     public: false
   })
 
-  const [activeSectionIndex, setActiveSectionIndex] = useState(0)
-  const [removeBackground, setRemoveBackground] = useState(false)
+  // Sync server data into local state (prefer server over draft)
+  useEffect(() => {
+    if (serverResume) {
+      setResumeData(serverResume);
+      document.title = serverResume.title;
+      clearDraft(); // clear local draft once server data loads
+    } else if (draft) {
+      setResumeData(draft);
+    }
+  }, [serverResume])
+
+  // Auto-save draft to localStorage on changes
+  useEffect(() => {
+    if (resumeData._id) {
+      saveDraft(resumeData);
+    }
+  }, [resumeData])
 
   const sections = [
     { id: "personal", name: "Personal Info", icon: User },
@@ -48,33 +70,16 @@ const ResumeBuilder = () => {
 
   const activeSection = sections[activeSectionIndex];
 
-  const loadExistingResume = async () => {
-    try {
-      const { data } = await api.get('/api/resumes/get/' + resumeId, { headers: { Authorization: token } })
-      if (data.resume) {
-        setResumeData(data.resume)
-        document.title = data.resume.title
-      }
-    } catch (error) {
-      console.log(error.message)
-    }
-  }
-
-  useEffect(() => {
-    loadExistingResume()
-  }, [])
-
   const changeResumeVisibility = async () => {
     try {
-      const formData = new FormData()
-      formData.append('resumeId', resumeId)
-      formData.append('resumeData', JSON.stringify({ public: !resumeData.public }))
-
-      const { data } = await api.put('/api/resumes/update/', formData, { headers: { Authorization: token } })
-      setResumeData({ ...resumeData, public: !resumeData.public })
-      toast.success(data.message)
+      await updateResumeMutation.mutateAsync({
+        resumeId,
+        resumeData: { public: !resumeData.public },
+      });
+      setResumeData({ ...resumeData, public: !resumeData.public });
+      toast.success(resumeData.public ? 'Resume is now private' : 'Resume is now public');
     } catch (error) {
-      console.error("Error saving resume:", error)
+      console.error("Error saving resume:", error);
     }
   }
 
@@ -96,21 +101,25 @@ const ResumeBuilder = () => {
   const saveResume = async () => {
     try {
       let updatedResumeData = structuredClone(resumeData)
+      let image = null;
 
       if (typeof resumeData.personal_info.info_image === 'object') {
-        delete updatedResumeData.personal_info.image
+        image = resumeData.personal_info.image;
+        delete updatedResumeData.personal_info.image;
       }
 
-      const formData = new FormData();
-      formData.append('resumeId', resumeId)
-      formData.append('resumeData', JSON.stringify(updatedResumeData))
-      removeBackground && formData.append("removeBackground", "yes")
-      typeof resumeData.personal_info.info_image === 'object' && formData.append("image", resumeData.personal_info.image)
+      const data = await updateResumeMutation.mutateAsync({
+        resumeId,
+        resumeData: updatedResumeData,
+        removeBackground,
+        image,
+      });
 
-      const { data } = await api.put('/api/resumes/update', formData, { headers: { Authorization: token } })
-
-      setResumeData(data.resume)
-      toast.success(data.message)
+      if (data.resume) {
+        setResumeData(data.resume);
+      }
+      clearDraft();
+      toast.success(data.message || 'Saved');
     } catch (error) {
       console.error("Error Saving Resume: ", error)
     }
@@ -143,11 +152,11 @@ const ResumeBuilder = () => {
 
                 <div className='flex items-center'>
                   {activeSectionIndex !== 0 && (
-                    <button onClick={() => setActiveSectionIndex((prevIndex) => Math.max(prevIndex - 1, 0))} className='flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all' disabled={activeSectionIndex === 0}>
+                    <button onClick={() => setActiveSectionIndex(Math.max(activeSectionIndex - 1, 0))} className='flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all' disabled={activeSectionIndex === 0}>
                       <ChevronLeft className='size-4' /> Previous
                     </button>
                   )}
-                  <button onClick={() => setActiveSectionIndex((prevIndex) => Math.min(prevIndex + 1, sections.length - 1))} className={`flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all ${activeSectionIndex === sections.length - 1 && 'opacity-50'}`} disabled={activeSectionIndex === sections.length - 1}>
+                  <button onClick={() => setActiveSectionIndex(Math.min(activeSectionIndex + 1, sections.length - 1))} className={`flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all ${activeSectionIndex === sections.length - 1 && 'opacity-50'}`} disabled={activeSectionIndex === sections.length - 1}>
                     Next <ChevronRight className='size-4' />
                   </button>
                 </div>
@@ -184,7 +193,7 @@ const ResumeBuilder = () => {
                   )
                 }
               </div>
-              <button onClick={() => { toast.promise(saveResume), { loading: "Saving..." } }} className='bg-gradient-to-br from-green-100 to-green-500 ring-green-300 text-green-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm'>
+              <button onClick={() => { toast.promise(saveResume(), { loading: "Saving..." }) }} className='bg-gradient-to-br from-green-100 to-green-500 ring-green-300 text-green-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm'>
                 Save Changes
               </button>
             </div>

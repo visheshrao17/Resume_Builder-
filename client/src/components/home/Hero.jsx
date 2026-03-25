@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux';
+import useAuthStore from '../../stores/useAuthStore';
 import { Link } from 'react-router-dom'
 
 const Hero = () => {
 
-    const { user } = useSelector(state => state.auth)
+    const user = useAuthStore(state => state.user)
 
     const [menuOpen, setMenuOpen] = useState(false);
 
