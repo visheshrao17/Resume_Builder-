@@ -10,6 +10,7 @@ import ExperienceForm from '../components/ExperienceForm';
 import EducationForm from '../components/EducationForm';
 import ProjectForm from '../components/ProjectForm';
 import SkillsForm from '../components/SkillsForm';
+import DownloadButton from '../components/pdf/DownloadButton';
 import useAuthStore from '../stores/useAuthStore';
 import useUIStore from '../stores/useUIStore';
 import { useResume, useUpdateResume } from '../hooks/useResumes';
@@ -94,9 +95,7 @@ const ResumeBuilder = () => {
     }
   }
 
-  const downloadResume = () => {
-    window.print()
-  }
+  // Removed old downloadResume in favor of <DownloadButton />
 
   const saveResume = async () => {
     try {
@@ -211,9 +210,7 @@ const ResumeBuilder = () => {
                   {resumeData.public ? <EyeIcon className='size-4' /> : <EyeOffIcon className='size-4' />}
                   {resumeData.public ? "Public" : "Private"}
                 </button>
-                <button onClick={downloadResume} className='flex items-center gap-2 px-6 py-2 text-xs bg-gradient-to-br from-green-100 to-green-200 text-green-600 rounded-lg ring-green-300 hover:ring transition-colors'>
-                  <DownloadIcon className='size-4' /> Download
-                </button>
+                <DownloadButton data={resumeData} />
               </div>
             </div>
 
