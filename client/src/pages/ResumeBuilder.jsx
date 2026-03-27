@@ -11,6 +11,7 @@ import EducationForm from '../components/EducationForm';
 import ProjectForm from '../components/ProjectForm';
 import SkillsForm from '../components/SkillsForm';
 import DownloadButton from '../components/pdf/DownloadButton';
+import ATSPreview from '../components/ats/ATSPreview';
 import useAuthStore from '../stores/useAuthStore';
 import useUIStore from '../stores/useUIStore';
 import { useResume, useUpdateResume } from '../hooks/useResumes';
@@ -22,7 +23,7 @@ const ResumeBuilder = () => {
   const { resumeId } = useParams();
   const token = useAuthStore((s) => s.token);
 
-  const { activeSectionIndex, setActiveSectionIndex, removeBackground, setRemoveBackground } = useUIStore();
+  const { activeSectionIndex, setActiveSectionIndex, removeBackground, setRemoveBackground, showATSPreview, setShowATSPreview } = useUIStore();
 
   const { data: serverResume } = useResume(resumeId);
   const updateResumeMutation = useUpdateResume();
@@ -210,11 +211,18 @@ const ResumeBuilder = () => {
                   {resumeData.public ? <EyeIcon className='size-4' /> : <EyeOffIcon className='size-4' />}
                   {resumeData.public ? "Public" : "Private"}
                 </button>
+                <button onClick={() => setShowATSPreview(!showATSPreview)} className={`flex items-center p-2 px-4 gap-2 text-xs rounded-lg ring hover:ring transition-colors ${showATSPreview ? 'bg-gradient-to-br from-purple-100 to-purple-200 text-purple-600 ring-purple-300' : 'bg-white border text-gray-700 ring-gray-200 border-gray-300'}`}>
+                  ATS {showATSPreview ? 'On' : 'Off'}
+                </button>
                 <DownloadButton data={resumeData} />
               </div>
             </div>
 
-            <ResumePreview data={resumeData} template={resumeData.template} accentColor={resumeData.accent_color} />
+            {showATSPreview ? (
+              <ATSPreview data={resumeData} />
+            ) : (
+              <ResumePreview data={resumeData} template={resumeData.template} accentColor={resumeData.accent_color} />
+            )}
           </div>
         </div>
       </div>

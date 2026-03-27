@@ -9,6 +9,7 @@ const useUIStore = create((set) => ({
   // Builder state
   activeSectionIndex: 0,
   removeBackground: false,
+  showATSPreview: false,
 
   // Actions
   setShowCreateResume: (show) => set({ showCreateResume: show }),
@@ -16,9 +17,10 @@ const useUIStore = create((set) => ({
   setEditResumeId: (id) => set({ editResumeId: id }),
   setActiveSectionIndex: (index) => set({ activeSectionIndex: index }),
   setRemoveBackground: (val) => set({ removeBackground: val }),
+  setShowATSPreview: (val) => set({ showATSPreview: val }),
 
   // Reset builder state when navigating away
-  resetBuilderState: () => set({ activeSectionIndex: 0, removeBackground: false }),
+  resetBuilderState: () => set({ activeSectionIndex: 0, removeBackground: false, showATSPreview: false }),
 }));
 
 export default useUIStore;
