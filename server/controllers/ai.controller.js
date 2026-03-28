@@ -61,6 +61,35 @@ export const enhanceJobDescription = async (req, res) => {
     }
 }
 
+export const enhanceBulletPoint = async (req, res) => {
+    try {
+        const { userContent } = req.body;
+
+        if (!userContent) {
+            return res.status(400).json({ message: "Content is required" });
+        }
+
+        const response = await ai.chat.completions.create({
+            model: process.env.OPENAI_MODEL,
+            messages: [
+                {
+                    role: "system",
+                    content: "You are an expert technical resume coach. Transform the user's vague job experience bullet point into a strong, metric-driven achievement using the XYZ structured formula: 'Accomplished [X], as measured by [Y], by doing [Z]'. Start with a strong action verb. Keep it to one single bullet point. Return only the text without any quotes or markdown."
+                },
+                {
+                    role: "user",
+                    content: userContent
+                }
+            ],
+        })
+        const enhancedContent = response.choices[0].message.content;
+
+        return res.status(200).json({ enhancedContent })
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
+    }
+}
+
 export const uploadResume = async (req, res) => {
     try {
 

@@ -10,6 +10,7 @@ import ExperienceForm from '../components/ExperienceForm';
 import EducationForm from '../components/EducationForm';
 import ProjectForm from '../components/ProjectForm';
 import SkillsForm from '../components/SkillsForm';
+import MatchScorePanel from '../components/scoring/MatchScorePanel';
 import DownloadButton from '../components/pdf/DownloadButton';
 import ATSPreview from '../components/ats/ATSPreview';
 import useAuthStore from '../stores/useAuthStore';
