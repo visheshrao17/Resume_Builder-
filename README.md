@@ -1,93 +1,51 @@
-#  Resume Builder
+# Career Platform & AI Resume Builder
 
-A full-stack application for building professional resumes with the power of AI. This application allows users to create, customize, and download resumes, leveraging OpenAI for content generation and ImageKit for asset management.
+An enterprise-grade, high-performance career platform built with React 19, Zustand, TanStack Query, and a modern AI-powered Node.js backend to provide intelligent scoring, ATS optimization, and vector-based PDF exports.
 
-## Tech Stack
+## Architecture Highlights
+![Architecture Overview](https://img.shields.io/badge/Architecture-Modern_React-blueviolet?style=for-the-badge)
 
-### Frontend
-- **React**: UI library for building the interface.
-- **Redux Toolkit**: State management.
-- **TailwindCSS**: Utility-first CSS framework for styling.
-- **Vite**: Next Generation Frontend Tooling.
+- **State Management:** Hybrid approach utilizing **Zustand** for transient UI states (toggles, active indices) and **TanStack Query** for normalized server-state synchronization with optimistic updates.
+- **Local-First Capabilities:** Users can draft resumes directly on the client using `localStorage` persistance without signing up. Seamless syncing upon authentication.
+- **High-Fidelity Rendering:** Vector-based PDF generation via `@react-pdf/renderer`, ensuring standard ATS parsability without relying on fragile `window.print()` hacks.
+- **Intelligent Features:** 
+  - **Match Score UI:** Real-time resume vs. job description grading utilizing a client-side BM25 information retrieval algorithm.
+  - **AI Bullet Coach:** An intelligent backend endpoint rewriting vague job histories into metric-driven (XYZ format) bullet points using structured OpenAI prompts.
+  - **ATS Diagnostics:** An ATS simulation tool exposing how bots extract text to ensure formatting safety and completeness.
+- **Testing & CI:** Test-driven BM25 utilities deployed with Vitest. Automated Github Actions workflow gating PRs against breaking builds.
 
-### Backend
-- **Node.js**: JavaScript runtime environment.
-- **Express**: Web application framework for Node.js.
-- **MongoDB**: NoSQL database for flexible data storage.
+## Technology Stack
+- **Frontend:** React 19, Vite, Tailwind CSS, Zustand, TanStack Query, `@react-pdf/renderer`
+- **Backend:** Express, MongoDB, OpenAI Node SDK
+- **DevOps:** Vitest, Playwright, GitHub Actions
 
-### Services
-- **OpenAI**: Powers the AI features for generating resume content.
-- **ImageKit**: Handling image uploads and storage.
+## Setup & Local Execution
 
-## Features
-- **Interactive Resume Builder**: Easy-to-use interface for adding education, experience, skills, and projects.
-- **AI Content Generation**: Generate professional descriptions and summaries using AI.
-- **Real-time Preview**: See changes to your resume instantly.
-- **User Authentication**: Secure signup and login functionality.
-- **PDF Export**: Download your resume as a professional PDF.
+### Client
+\`\`\`bash
+cd client
+npm install
+npm run dev
+\`\`\`
 
-## Installation Guidelines
-
-> [!IMPORTANT]
-> Ensure you have **Node.js** and **npm** installed on your machine.
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/visheshrao17/Resume_Builder-.git
-cd Resume_Builder-
-```
-
-### 2. Backend Setup
-Navigate to the server directory and install dependencies:
-```bash
+### Server
+\`\`\`bash
 cd server
 npm install
-```
+# Ensure .env contains OPENAI_API_KEY and MONGO_URI
+npm start
+\`\`\`
 
-Create a `.env` file in the `server` directory with the following variables:
-```env
-PORT=3000
-MONGODB_URI=your_mongodb_connection_string
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_BASE_URL=your_openai_base_url
-IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
-```
+### Testing
+\`\`\`bash
+cd client
+npm run test  # Runs Vitest suites for algorithms
+npx playwright test # Runs basic browser mounting E2E tests
+\`\`\`
 
-Start the backend server:
-```bash
-npm run server
-```
+## Key Features
 
-### 3. Frontend Setup
-Navigate to the client directory and install dependencies:
-```bash
-cd ../client
-npm install
-```
-
-Create a `.env` file in the `client` directory:
-```env
-VITE_BASE_URL=http://localhost:3000
-```
-
-Start the frontend development server:
-```bash
-npm run dev
-```
-
-## Environment Variables
-
-### Server (`server/.env`)
-| Variable | Description |
-|----------|-------------|
-| `PORT` | Port for the backend server (default: 3000) |
-| `MONGODB_URI` | Connection string for MongoDB |
-| `OPENAI_API_KEY` | API Key for OpenAI |
-| `OPENAI_BASE_URL` | Base URL for OpenAI API (if using a proxy or specific endpoint) |
-| `IMAGEKIT_PRIVATE_KEY` | Private key for ImageKit integration |
-
-### Client (`client/.env`)
-| Variable | Description |
-|----------|-------------|
-| `VITE_BASE_URL` | Base URL of the backend API |
-
+1. **AI Match Scoring Panel:** Paste the target Job Description to reveal a `BM25` retrieval match score evaluating missing and matched keywords.
+2. **ATS Optimization Toggle:** Instantly strips styling to reveal how an applicant tracking system parses the core resume tokens.
+3. **Bullet Point Engineer:** One click inside the experience form rewrites descriptions utilizing strict action-verb metric-driven layouts.
+4. **Offline Resilience:** Auto-saving local drafts ensuring no data loss before backend synchronization.
