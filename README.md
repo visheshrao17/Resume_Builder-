@@ -1,4 +1,4 @@
-# AI Resume Builder
+#  Resume Builder
 
 A full-stack application for building professional resumes with the power of AI. This application allows users to create, customize, and download resumes, leveraging OpenAI for content generation and ImageKit for asset management.
 
