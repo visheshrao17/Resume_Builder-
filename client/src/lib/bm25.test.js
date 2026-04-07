@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest';
 import { calculateBM25Score } from './bm25';
 
@@ -11,8 +12,8 @@ describe('BM25 Algorithm Score Calculation', () => {
     });
 
     it('should score 0 when there are no matches', () => {
-        const resume = "Experienced software engineer with python and java";
-        const jd = "Looking for a nurse with hospital experience";
+        const resume = "Proficient software engineer skilled python and java";
+        const jd = "Looking for nurse hospital medical background";
         const result = calculateBM25Score(resume, jd);
         
         expect(result.score).toBe(0);

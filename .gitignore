@@ -1,5 +1,8 @@
 .DS_Store
-.node_modules
+node_modules/
+.vite/
+vitest/
+result.json
 dist
 build
 coverage
