@@ -30,7 +30,7 @@ export const useResume = (resumeId) => {
       const { data } = await api.get('/api/resumes/get/' + resumeId, getAuthHeaders());
       return data.resume;
     },
-    enabled: !!token && !!resumeId,
+    enabled: !!token && !!resumeId && resumeId !== 'draft',
   });
 };
 

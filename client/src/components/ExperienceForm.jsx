@@ -98,14 +98,16 @@ const ExperienceForm = ({ data, onChange }) => {
                             <div className='space-y-2'>
                                 <div className='flex items-center justify-between'>
                                     <label className='text-sm font-medium text-gray-700'>Job Description</label>
-                                    <button onClick={() => generateDescription(index)} disabled={generatingIndex === index || !experience.position || !experience.company} className='flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50'>
-                                        {generatingIndex === index ? (
-                                            <Loader2 className='w-3 h-3 animate-spin' />
-                                        ) : (
-                                            <Sparkles className='w-3 h-3' />
-                                        )}
-                                        Enhance with AI
-                                    </button>
+                                    {token && (
+                                        <button onClick={() => generateDescription(index)} disabled={generatingIndex === index || !experience.position || !experience.company} className='flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50'>
+                                            {generatingIndex === index ? (
+                                                <Loader2 className='w-3 h-3 animate-spin' />
+                                            ) : (
+                                                <Sparkles className='w-3 h-3' />
+                                            )}
+                                            Enhance with AI
+                                        </button>
+                                    )}
                                 </div>
                                 <textarea value={experience.description || ""} onChange={(e) => updateExperience(index, "description", e.target.value)} rows={4} className='w-full text-sm px-3 py-2 rounded-lg resize-none' placeholder='Describe your key responsibilities and achievements...' />
                             </div>

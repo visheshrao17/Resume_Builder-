@@ -45,8 +45,9 @@ const App = () => {
 
         <Route path="app" element={<Layout />}>
           <Route index element={<Dashboard />} />
-          <Route path="builder/:resumeId" element={<ResumeBuilder />} />
         </Route>
+
+        <Route path="app/builder/:resumeId" element={<ResumeBuilder />} />
 
         <Route path="view/:resumeId" element={<Preview />} />
 
