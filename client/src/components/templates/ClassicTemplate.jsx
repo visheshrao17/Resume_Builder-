@@ -58,7 +58,7 @@ const ClassicTemplate = ({ data, accentColor }) => {
                     <h2 className="text-xl font-semibold mb-3" style={{ color: accentColor }}>
                         PROFESSIONAL SUMMARY
                     </h2>
-                    <p className="text-gray-700 leading-relaxed">{data.professional_summary}</p>
+                    <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{data.professional_summary}</p>
                 </section>
             )}
 
@@ -104,6 +104,7 @@ const ClassicTemplate = ({ data, accentColor }) => {
                             <div key={index} className="flex justify-between items-start border-l-3 border-gray-300 pl-6">
                                 <div>
                                     <li className="font-semibold text-gray-800 ">{proj.name}</li>
+                                    {proj.type && <p className="text-sm font-medium mb-1" style={{ color: accentColor }}>{proj.type}</p>}
                                     <p className="text-gray-600">{proj.description}</p>
                                 </div>
                             </div>

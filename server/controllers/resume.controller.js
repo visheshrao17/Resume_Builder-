@@ -91,11 +91,11 @@ export const updateResume = async (req, res) => {
                 fileName: 'resume.png',
                 folder: 'user-resumes',
                 transformation: {
-                    pre: 'w-300, h-300, fo-face, z-0.75' + (removeBackground ? ', e-bgremoval' : '')
+                    pre: 'w-300, h-300, fo-face, z-0.75'
                 }
             });
 
-            resumeDataCope.personal_info.image = response.url;
+            resumeDataCopy.personal_info.image = response.url;
         }
 
         const resume = await Resume.findOneAndUpdate(

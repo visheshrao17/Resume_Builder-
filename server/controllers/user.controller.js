@@ -104,7 +104,7 @@ export const getUserResumes = async(req, res) => {
     try {
         const userId = req.userId;
 
-        const resumes = await Resume.find({ user: userId });
+        const resumes = await Resume.find({ userId });
         
         return res.status(200).json({
             message: "Resumes retrieved successfully",

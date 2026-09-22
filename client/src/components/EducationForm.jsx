@@ -54,20 +54,20 @@ const EducationForm = ({ data, onChange }) => {
                             <div className='grid md:grid-cols-2 gap-3'>
 
                                 <input
-                                    value={education.institution || ""} onChange={(e) => updateEducation(index, "education", e.target.value)} type="text" placeholder='Institution Name' className='px-3 py-2 text-sm rounded-lg' />
+                                    value={education.institution || ""} onChange={(e) => updateEducation(index, "institution", e.target.value)} type="text" placeholder='Institution Name' className='px-3 py-2 text-sm rounded-lg border border-gray-300 w-full outline-none' />
 
                                 <input
-                                    value={education.degree || ""} onChange={(e) => updateEducation(index, "degree", e.target.value)} type="text" placeholder="Degree (e.g., Bachelor's, Master's)" className='px-3 py-2 text-sm ' />
+                                    value={education.degree || ""} onChange={(e) => updateEducation(index, "degree", e.target.value)} type="text" placeholder="Degree (e.g., Bachelor's, Master's)" className='px-3 py-2 text-sm rounded-lg border border-gray-300 w-full outline-none' />
 
                                 <input
-                                    value={education.field || ""} onChange={(e) => updateEducation(index, "field", e.target.value)} type="text" className='px-3 py-2 text-sm' placeholder='Field of Study' />
+                                    value={education.field || ""} onChange={(e) => updateEducation(index, "field", e.target.value)} type="text" className='px-3 py-2 text-sm rounded-lg border border-gray-300 w-full outline-none' placeholder='Field of Study' />
 
                                 <input
-                                    value={education.graduation_date || ""} onChange={(e) => updateEducation(index, "graduation_date", e.target.value)} type="month" className='px-3 py-2 text-sm' />
+                                    value={education.graduation_date || ""} onChange={(e) => updateEducation(index, "graduation_date", e.target.value)} type="month" className='px-3 py-2 text-sm rounded-lg border border-gray-300 w-full outline-none' />
                             </div>
 
                             <input
-                                value={education.gpa || ""} onChange={(e) => updateEducation(index, "gpa", e.target.value)} type="text" className='px-3 py-2 text-sm' placeholder='GPA (optional)' />
+                                value={education.gpa || ""} onChange={(e) => updateEducation(index, "gpa", e.target.value)} type="text" className='px-3 py-2 text-sm rounded-lg border border-gray-300 w-full outline-none' placeholder='GPA (optional)' />
                         </div>
                     ))}
                 </div>

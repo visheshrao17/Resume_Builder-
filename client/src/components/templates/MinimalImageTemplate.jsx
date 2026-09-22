@@ -114,7 +114,7 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                             <h2 className="text-sm font-semibold tracking-widest mb-3" style={{ color: accentColor }} >
                                 SUMMARY
                             </h2>
-                            <p className="text-zinc-700 leading-relaxed">
+                            <p className="text-zinc-700 leading-relaxed whitespace-pre-wrap">
                                 {data.professional_summary}
                             </p>
                         </section>

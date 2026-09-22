@@ -43,7 +43,7 @@ const ResumeSchema = Schema({
         {
             institution: { type: String },
             degree: { type: String },
-            graduation_data: { type: String },
+            graduation_date: { type: String },
             field: { type: String },
             gpa: { type: String },
         }

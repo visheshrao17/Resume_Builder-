@@ -1,9 +1,29 @@
-import { BriefcaseBusiness, Globe, Linkedin, Mail, MapPin, Phone, User } from 'lucide-react'
-import React from 'react'
+import { BriefcaseBusiness, Globe, Linkedin, Mail, MapPin, Phone, User, Loader2 } from 'lucide-react'
+import React, { useState } from 'react'
+import { removeBackground as imglyRemoveBackground } from '@imgly/background-removal'
 
 const PersonalInfoForm = ({ data, onChange, removeBackground, setRemoveBackground }) => {
+    const [isRemovingBg, setIsRemovingBg] = useState(false);
+
     const handleChange = (field, value) => {
         onChange({ ...data, [field]: value })
+    }
+
+    const handleBgRemovalToggle = async (e) => {
+        const checked = e.target.checked;
+        setRemoveBackground(checked);
+        if (checked && typeof data.image === 'object') {
+            setIsRemovingBg(true);
+            try {
+                const blob = await imglyRemoveBackground(data.image);
+                handleChange("image", new File([blob], data.image.name || "image.png", { type: "image/png" }));
+            } catch (err) {
+                console.error("BG Removal failed", err);
+                setRemoveBackground(false);
+            } finally {
+                setIsRemovingBg(false);
+            }
+        }
     }
 
     const fields = [
@@ -36,10 +56,11 @@ const PersonalInfoForm = ({ data, onChange, removeBackground, setRemoveBackgroun
                     <div>
                         <p>Remove Background</p>
                         <label className='relative inline-flex items-center cursor-pointer text-gray-900 gap-3'>
-                            <input type="checkbox" className='sr-only peer' onChange={() => setRemoveBackground(prev => !prev)} checked={removeBackground} />
-                            <div className='w-9 h-5 bg-slate-300 rounded-full peer peer-checked:bg-green-500 transition-colors duration-200'></div>
-                            <span className='dot absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-4'></span>
+                            <input type="checkbox" className='sr-only peer' onChange={handleBgRemovalToggle} checked={removeBackground} disabled={isRemovingBg} />
+                            <div className={`w-9 h-5 bg-slate-300 rounded-full peer transition-colors duration-200 ${removeBackground ? 'bg-green-500' : ''} ${isRemovingBg ? 'opacity-50' : ''}`}></div>
+                            <span className={`dot absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200 ease-in-out ${removeBackground ? 'translate-x-4' : ''}`}></span>
                         </label>
+                        {isRemovingBg && <span className="text-xs text-blue-500 ml-2 flex items-center gap-1"><Loader2 className="animate-spin size-3" /> processing...</span>}
                     </div>
                 )}
             </div>

@@ -26,6 +26,14 @@ const ResumeBuilder = () => {
 
   const { activeSectionIndex, setActiveSectionIndex, removeBackground, setRemoveBackground, showATSPreview, setShowATSPreview } = useUIStore();
 
+  const showAuthToast = () => toast(
+    <div className="flex flex-col gap-1">
+      <span className="font-semibold text-gray-900 text-sm">Sign up or Log in</span>
+      <span className="text-sm text-gray-600">Please sign up or log in to save your progress and access all features.</span>
+    </div>,
+    { duration: 4000 }
+  );
+
   const { data: serverResume } = useResume(resumeId);
   const updateResumeMutation = useUpdateResume();
   const { draft, saveDraft, clearDraft } = useLocalDraft(resumeId);
@@ -43,6 +51,14 @@ const ResumeBuilder = () => {
     accent_color: "#3b82f6",
     public: false
   })
+
+  const [showGuestPopup, setShowGuestPopup] = useState(false);
+
+  useEffect(() => {
+    if (!token && resumeId === 'draft') {
+      setShowGuestPopup(true);
+    }
+  }, [token, resumeId]);
 
   // Sync server data into local state (prefer server over draft)
   useEffect(() => {
@@ -129,8 +145,8 @@ const ResumeBuilder = () => {
   return (
     <div>
       <div className='max-w-7xl mx-auto py-6 px-4'>
-        <Link to="/app" className="inline-flex gap-2 items-center text-slate-500 hover:text-slate-700 transition-all ">
-          <ArrowLeftIcon className='size-4' /> Back to Dashboard
+        <Link to={token ? "/app" : "/"} className="inline-flex gap-2 items-center text-slate-500 hover:text-slate-700 transition-all ">
+          <ArrowLeftIcon className='size-4' /> Back to {token ? "Dashboard" : "Home"}
         </Link>
       </div>
 
@@ -199,7 +215,12 @@ const ResumeBuilder = () => {
                     Save Changes
                   </button>
               ) : (
-                  <p className='text-xs text-amber-600 mt-6 bg-amber-50 p-2 rounded border border-amber-200'>You are drafting as a guest. Your work is saved locally in this browser. Log in to save to the cloud and share.</p>
+                  <button onClick={showAuthToast} className='bg-gradient-to-br from-green-100 to-green-500 ring-green-300 text-green-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm'>
+                    Save to Cloud
+                  </button>
+              )}
+              {!token && (
+                  <p className='text-xs text-amber-600 mt-2 bg-amber-50 p-2 rounded border border-amber-200'>You are drafting as a guest. Your work is saved locally in this browser. Log in to save to the cloud and share.</p>
               )}
             </div>
           </div>
@@ -233,6 +254,21 @@ const ResumeBuilder = () => {
           </div>
         </div>
       </div>
+      {showGuestPopup && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+           <div className="bg-white p-6 rounded-xl max-w-md w-full shadow-2xl">
+              <h2 className="text-xl font-bold mb-3 text-gray-900">Welcome to Guest Mode</h2>
+              <p className="text-gray-600 mb-6 text-sm leading-relaxed">
+                  You can build and download your resume without logging in. However, please <Link to="/app?state=register" className="text-green-600 font-semibold hover:underline">Sign Up</Link> or <Link to="/app?state=login" className="text-green-600 font-semibold hover:underline">Log In</Link> to save your progress to the cloud and unlock all features, including AI enhancements.
+              </p>
+              <div className="flex justify-end">
+                 <button onClick={() => setShowGuestPopup(false)} className="px-5 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                     Continue as Guest
+                 </button>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   )
 }

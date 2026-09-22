@@ -9,6 +9,14 @@ const ExperienceForm = ({ data, onChange }) => {
     const token = useAuthStore(state => state.token)
     const [generatingIndex, setGeneratingIndex] = useState(-1)
 
+    const showAuthToast = () => toast(
+        <div className="flex flex-col gap-1">
+            <span className="font-semibold text-gray-900 text-sm">Sign up or Log in</span>
+            <span className="text-sm text-gray-600">Please sign up or log in to save your progress and access all features.</span>
+        </div>,
+        { duration: 4000 }
+    );
+
     const addExperience = () => {
         const newExperience = {
             company: "",
@@ -78,16 +86,16 @@ const ExperienceForm = ({ data, onChange }) => {
                             <div className='grid md:grid-cols-2 gap-3'>
 
                                 <input
-                                    value={experience.company || ""} onChange={(e) => updateExperience(index, "company", e.target.value)} type="text" placeholder='Company Name' className='px-3 py-2 text-sm rounded-lg' />
+                                    value={experience.company || ""} onChange={(e) => updateExperience(index, "company", e.target.value)} type="text" placeholder='Company Name' className='px-3 py-2 text-sm rounded-lg border border-gray-300 w-full outline-none' />
 
                                 <input
-                                    value={experience.position || ""} onChange={(e) => updateExperience(index, "position", e.target.value)} type="text" placeholder='Job Title' className='px-3 py-2 text-sm rounded-lg' />
+                                    value={experience.position || ""} onChange={(e) => updateExperience(index, "position", e.target.value)} type="text" placeholder='Job Title' className='px-3 py-2 text-sm rounded-lg border border-gray-300 w-full outline-none' />
 
                                 <input
-                                    value={experience.start_date || ""} onChange={(e) => updateExperience(index, "start_date", e.target.value)} type="month" className='px-3 py-2 text-sm rounded-lg' />
+                                    value={experience.start_date || ""} onChange={(e) => updateExperience(index, "start_date", e.target.value)} type="month" className='px-3 py-2 text-sm rounded-lg border border-gray-300 w-full outline-none' />
 
                                 <input
-                                    value={experience.end_data || ""} onChange={(e) => updateExperience(index, "end_data", e.target.value)} type="month" disabled={experience.is_current} className='px-3 py-2 text-sm rounded-lg disabled:bg-gray-100' />
+                                    value={experience.end_date || ""} onChange={(e) => updateExperience(index, "end_date", e.target.value)} type="month" disabled={experience.is_current} className='px-3 py-2 text-sm rounded-lg border border-gray-300 w-full outline-none disabled:bg-gray-100' />
                             </div>
 
                             <label className='flex items-center gap-2'>
@@ -98,16 +106,14 @@ const ExperienceForm = ({ data, onChange }) => {
                             <div className='space-y-2'>
                                 <div className='flex items-center justify-between'>
                                     <label className='text-sm font-medium text-gray-700'>Job Description</label>
-                                    {token && (
-                                        <button onClick={() => generateDescription(index)} disabled={generatingIndex === index || !experience.position || !experience.company} className='flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50'>
-                                            {generatingIndex === index ? (
-                                                <Loader2 className='w-3 h-3 animate-spin' />
-                                            ) : (
-                                                <Sparkles className='w-3 h-3' />
-                                            )}
-                                            Enhance with AI
-                                        </button>
-                                    )}
+                                    <button onClick={token ? () => generateDescription(index) : showAuthToast} disabled={generatingIndex === index || !experience.position || !experience.company} className='flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50'>
+                                        {generatingIndex === index ? (
+                                            <Loader2 className='w-3 h-3 animate-spin' />
+                                        ) : (
+                                            <Sparkles className='w-3 h-3' />
+                                        )}
+                                        Enhance with AI
+                                    </button>
                                 </div>
                                 <textarea value={experience.description || ""} onChange={(e) => updateExperience(index, "description", e.target.value)} rows={4} className='w-full text-sm px-3 py-2 rounded-lg resize-none' placeholder='Describe your key responsibilities and achievements...' />
                             </div>

@@ -45,15 +45,15 @@ const ProjectForm = ({ data, onChange }) => {
                         <div className='grid gap-3'>
 
                             <input
-                                value={project.name || ""} onChange={(e) => updateProject(index, "name", e.target.value)} type="text" placeholder='Project Name' className='px-3 py-2 text-sm rounded-lg'
+                                value={project.name || ""} onChange={(e) => updateProject(index, "name", e.target.value)} type="text" placeholder='Project Name' className='px-3 py-2 text-sm rounded-lg border border-gray-300 w-full outline-none'
                             />
 
                             <input
-                                value={project.type || ""} onChange={(e) => updateProject(index, "type", e.target.value)} type="text" placeholder='Project Type' className='px-3 py-2 text-sm rounded-lg'
+                                value={project.type || ""} onChange={(e) => updateProject(index, "type", e.target.value)} type="text" placeholder='Project Type' className='px-3 py-2 text-sm rounded-lg border border-gray-300 w-full outline-none'
                             />
 
                             <textarea
-                                value={project.description || ""} onChange={(e) => updateProject(index, "description", e.target.value)} type="text" placeholder='Describe your project...' className='w-full px-3 py-2 text-sm rounded-lg resize-none'
+                                value={project.description || ""} onChange={(e) => updateProject(index, "description", e.target.value)} type="text" placeholder='Describe your project...' className='w-full px-3 py-2 text-sm rounded-lg border border-gray-300 outline-none resize-none'
                             />
 
                         </div>

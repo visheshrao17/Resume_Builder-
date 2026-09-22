@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import useAuthStore from '../../stores/useAuthStore';
 import { Link } from 'react-router-dom'
+import logo from '/logo.svg'
 
 const Hero = () => {
 
@@ -22,7 +23,7 @@ const Hero = () => {
                 {/* Navbar */}
                 <nav className="z-50 flex items-center justify-between w-full py-4 px-6 md:px-16 lg:px-24 xl:px-40 text-sm">
                     <a href="/">
-                        <img src="/logo.svg" alt="logo" className='h-11 w-auto' />
+                        <img src={logo} alt="logo" className='h-11 w-auto' />
                     </a>
 
                     <div className="hidden md:flex items-center gap-8 transition duration-500 text-slate-800">
@@ -107,11 +108,11 @@ const Hero = () => {
                         </Link>
                     </div>
 
-                    <p className="py-6 text-slate-600 mt-14">Trusted by leading brands, including</p>
+                    {/* <p className="py-6 text-slate-600 mt-14">Trusted by leading brands, including</p>
 
                     <div className="flex flex-wrap justify-between max-sm:justify-center gap-6 max-w-3xl w-full mx-auto py-4" id="logo-container">
                         {logos.map((logo, index) => <img key={index} src={logo} alt="logo" className="h-6 w-auto max-w-xs" />)}
-                    </div>
+                    </div> */}
                 </div>
             </div>
             <style>

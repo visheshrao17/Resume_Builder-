@@ -9,6 +9,14 @@ const ProfessionalSummaryForm = ({ data, onChange, setResumeData }) => {
     const token = useAuthStore(state => state.token)
     const [isGenerating, setIsGenerating] = useState(false)
 
+    const showAuthToast = () => toast(
+        <div className="flex flex-col gap-1">
+            <span className="font-semibold text-gray-900 text-sm">Sign up or Log in</span>
+            <span className="text-sm text-gray-600">Please sign up or log in to save your progress and access all features.</span>
+        </div>,
+        { duration: 4000 }
+    );
+
     const generateSummary = async () => {
         try {
             setIsGenerating(true)
@@ -29,12 +37,10 @@ const ProfessionalSummaryForm = ({ data, onChange, setResumeData }) => {
                     <h3 className='flex items-center gap-2 text-lg font-semibold text-gray-900'>Professional Summary</h3>
                     <p className='text-sm text-gray-500'>Add summary for your resume here</p>
                 </div>
-                {token && (
-                    <button disabled={isGenerating} onClick={generateSummary} className='flex items-center gap-2 px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50'>
-                        {isGenerating ? (<Loader2 className='size-4 animate-spin' />) : (<Sparkles className='size-4' />)}
-                        {isGenerating ? "Enhancing..." : "AI Enhance"}
-                    </button>
-                )}
+                <button disabled={isGenerating} onClick={token ? generateSummary : showAuthToast} className='flex items-center gap-2 px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50'>
+                    {isGenerating ? (<Loader2 className='size-4 animate-spin' />) : (<Sparkles className='size-4' />)}
+                    {isGenerating ? "Enhancing..." : "AI Enhance"}
+                </button>
             </div>
 
             <div className='mt-6'>
